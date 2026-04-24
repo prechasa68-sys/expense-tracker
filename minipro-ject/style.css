@@ -1,0 +1,567 @@
+/* ==============================================
+   style.css — Expense Tracker
+   โครงสร้าง CSS:
+   1. CSS Variables (ตัวแปรสี/ขนาด)
+   2. Reset & Base Styles
+   3. Layout
+   4. Header & Summary Cards
+   5. Form
+   6. Transaction List
+   7. Buttons
+   8. Empty State
+   9. Animations
+   10. Responsive (มือถือ)
+   ============================================== */
+
+
+/* -----------------------------------------------
+   1. CSS VARIABLES — กำหนดค่าสีและขนาดกลาง
+      เปลี่ยนที่นี่ที่เดียว ทุกที่อัปเดตตาม
+   ----------------------------------------------- */
+:root {
+    /* สีหลัก */
+    --color-bg: #f4f6f9;
+    --color-surface: #ffffff;
+    --color-border: #e2e8f0;
+
+    /* สีข้อความ */
+    --color-text-primary: #1a202c;
+    --color-text-secondary: #718096;
+
+    /* สีรายรับ */
+    --color-income: #38a169;
+    --color-income-bg: #f0fff4;
+    --color-income-border: #c6f6d5;
+
+    /* สีรายจ่าย */
+    --color-expense: #e53e3e;
+    --color-expense-bg: #fff5f5;
+    --color-expense-border: #fed7d7;
+
+    /* สีปุ่มหลัก */
+    --color-primary: #4a6cf7;
+    --color-primary-hover: #3451d1;
+
+    /* สีปุ่ม Danger */
+    --color-danger: #e53e3e;
+    --color-danger-hover: #c53030;
+
+    /* ขนาด */
+    --border-radius: 12px;
+    --border-radius-sm: 8px;
+    --shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+    --shadow-card: 0 4px 20px rgba(0, 0, 0, 0.1);
+
+    /* ฟอนต์ */
+    --font: 'Sarabun', sans-serif;
+}
+
+
+/* -----------------------------------------------
+   2. RESET & BASE STYLES — รีเซ็ตค่าพื้นฐาน
+   ----------------------------------------------- */
+*,
+*::before,
+*::after {
+    /* ทำให้ padding/border ไม่เพิ่มขนาด element */
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: var(--font);
+    background-color: var(--color-bg);
+    color: var(--color-text-primary);
+    min-height: 100vh;
+    line-height: 1.6;
+}
+
+/* ทำให้รูปภาพไม่เกินกรอบ */
+img {
+    max-width: 100%;
+}
+
+
+/* -----------------------------------------------
+   3. LAYOUT — โครงสร้างหน้าเว็บ
+   ----------------------------------------------- */
+.container {
+    max-width: 680px;
+    /* กว้างสุด 680px */
+    margin: 0 auto;
+    /* จัดกึ่งกลางแนวนอน */
+    padding: 24px 16px 48px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+
+/* -----------------------------------------------
+   4. HEADER & SUMMARY CARDS
+   ----------------------------------------------- */
+.app-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 32px 24px 40px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.app-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="rgba(255,255,255,0.1)"/><circle cx="75" cy="75" r="1" fill="rgba(255,255,255,0.1)"/><circle cx="50" cy="50" r="1" fill="rgba(255,255,255,0.05)"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+    opacity: 0.3;
+}
+
+.app-title {
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin-bottom: 4px;
+    position: relative;
+    z-index: 1;
+}
+
+.app-subtitle {
+    font-size: 0.95rem;
+    opacity: 0.85;
+    margin-bottom: 28px;
+    position: relative;
+    z-index: 1;
+}
+
+/* Grid 3 คอลัมน์สำหรับ Summary Cards */
+.summary-cards {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    max-width: 640px;
+    margin: 0 auto;
+}
+
+/* Card พื้นฐาน */
+.card {
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    border-radius: var(--border-radius);
+    padding: 16px 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s;
+}
+
+.card:hover::before {
+    left: 100%;
+}
+
+.card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.card-label {
+    font-size: 0.78rem;
+    opacity: 0.85;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 500;
+}
+
+.card-amount {
+    font-size: 1.3rem;
+    font-weight: 700;
+}
+
+/* สีพิเศษสำหรับยอดคงเหลือ */
+.card--balance .card-amount {
+    font-size: 1.5rem;
+}
+
+
+/* -----------------------------------------------
+   5. FORM SECTION
+   ----------------------------------------------- */
+.form-section {
+    background: var(--color-surface);
+    border-radius: var(--border-radius);
+    padding: 24px;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--color-border);
+    position: relative;
+    overflow: hidden;
+}
+
+.form-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--color-primary), var(--color-income), var(--color-primary));
+}
+
+.section-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--color-text-primary);
+    margin-bottom: 20px;
+    position: relative;
+}
+
+.form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+/* กลุ่ม label + input */
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.form-group label {
+    font-size: 0.88rem;
+    font-weight: 500;
+    color: var(--color-text-secondary);
+}
+
+/* Input และ Select ใช้ style เดียวกัน */
+.form-group input,
+.form-group select {
+    padding: 10px 14px;
+    border: 1.5px solid var(--color-border);
+    border-radius: var(--border-radius-sm);
+    font-size: 0.95rem;
+    font-family: var(--font);
+    color: var(--color-text-primary);
+    background: var(--color-surface);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    outline: none;
+}
+
+/* เมื่อ focus จะมีกรอบสีน้ำเงิน */
+.form-group input:focus,
+.form-group select:focus {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(74, 108, 247, 0.12);
+}
+
+/* Placeholder สีอ่อน */
+.form-group input::placeholder {
+    color: #a0aec0;
+}
+
+
+/* -----------------------------------------------
+   6. TRANSACTION LIST
+   ----------------------------------------------- */
+.list-section {
+    background: var(--color-surface);
+    border-radius: var(--border-radius);
+    padding: 24px;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--color-border);
+}
+
+.list-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.list-header .section-title {
+    margin-bottom: 0;
+}
+
+/* ลบ bullet point ออกจาก <ul> */
+.transaction-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+/* แต่ละรายการ */
+.transaction-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 16px;
+    border-radius: var(--border-radius-sm);
+    border: 1px solid transparent;
+    animation: slideIn 0.25s ease;
+    gap: 12px;
+    transition: all 0.2s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.transaction-item:hover {
+    transform: translateX(4px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* สีพื้นหลังตามประเภท */
+.transaction-item.income {
+    background: var(--color-income-bg);
+    border-color: var(--color-income-border);
+}
+
+.transaction-item.expense {
+    background: var(--color-expense-bg);
+    border-color: var(--color-expense-border);
+}
+
+/* ส่วนซ้าย: ชื่อ + วันที่ */
+.transaction-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    flex: 1;
+    /* ขยายเต็มพื้นที่ที่เหลือ */
+    min-width: 0;
+    /* ป้องกัน text overflow */
+}
+
+.transaction-description {
+    font-weight: 500;
+    font-size: 0.95rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    /* ถ้ายาวเกินจะแสดง ... */
+}
+
+.transaction-date {
+    font-size: 0.78rem;
+    color: var(--color-text-secondary);
+}
+
+/* ส่วนขวา: ราคา + ปุ่มลบ */
+.transaction-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-shrink: 0;
+    /* ไม่ให้ย่อขนาด */
+}
+
+.transaction-amount {
+    font-weight: 700;
+    font-size: 1rem;
+}
+
+.transaction-item.income .transaction-amount {
+    color: var(--color-income);
+}
+
+.transaction-item.expense .transaction-amount {
+    color: var(--color-expense);
+}
+
+/* ปุ่มลบแต่ละรายการ */
+.delete-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1rem;
+    opacity: 0.4;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+    padding: 4px;
+    border-radius: 4px;
+    line-height: 1;
+}
+
+.delete-btn:hover {
+    opacity: 1;
+    transform: scale(1.2);
+}
+
+
+/* -----------------------------------------------
+   7. BUTTONS
+   ----------------------------------------------- */
+.btn {
+    padding: 12px 20px;
+    border: none;
+    border-radius: var(--border-radius-sm);
+    font-family: var(--font);
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.btn:active {
+    transform: scale(0.98);
+    /* กดแล้วเล็กนิดหน่อย = รู้สึก click */
+}
+
+/* ปุ่มหลัก (น้ำเงิน) */
+.btn--primary {
+    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-hover) 100%);
+    color: white;
+    width: 100%;
+    position: relative;
+    overflow: hidden;
+}
+
+.btn--primary::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s;
+}
+
+.btn--primary:hover::before {
+    left: 100%;
+}
+
+.btn--primary:hover {
+    background: linear-gradient(135deg, var(--color-primary-hover) 0%, var(--color-primary) 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 15px rgba(74, 108, 247, 0.3);
+}
+
+/* ปุ่ม Danger (แดง) */
+.btn--danger {
+    background: var(--color-danger);
+    color: white;
+}
+
+.btn--danger:hover {
+    background: var(--color-danger-hover);
+}
+
+/* ปุ่มขนาดเล็ก */
+.btn--small {
+    padding: 6px 12px;
+    font-size: 0.82rem;
+}
+
+
+/* -----------------------------------------------
+   8. EMPTY STATE — ข้อความเมื่อไม่มีรายการ
+   ----------------------------------------------- */
+.empty-state {
+    text-align: center;
+    padding: 32px 16px;
+    color: var(--color-text-secondary);
+    font-size: 0.9rem;
+    line-height: 1.8;
+    animation: fadeIn 0.5s ease;
+}
+
+.empty-state p:first-child {
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: var(--color-text-primary);
+    margin-bottom: 8px;
+}
+
+.empty-state::before {
+    content: '📊';
+    font-size: 3rem;
+    display: block;
+    margin-bottom: 16px;
+    opacity: 0.5;
+}
+
+
+/* -----------------------------------------------
+   9. ANIMATIONS
+   ----------------------------------------------- */
+
+/* รายการ slide เข้ามาจากด้านบน */
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-8px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Fade in animation */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+.fade-in {
+    animation: fadeIn 0.3s ease;
+}
+
+
+/* -----------------------------------------------
+   10. RESPONSIVE — ปรับสำหรับมือถือ
+       (เมื่อหน้าจอกว้างน้อยกว่า 480px)
+   ----------------------------------------------- */
+@media (max-width: 480px) {
+
+    .app-header {
+        padding: 24px 16px 32px;
+    }
+
+    .app-title {
+        font-size: 1.4rem;
+    }
+
+    /* Summary Cards: เปลี่ยนจาก 3 คอลัมน์ เป็น 1 แถว scroll ได้ */
+    .summary-cards {
+        grid-template-columns: repeat(3, minmax(100px, 1fr));
+        overflow-x: auto;
+    }
+
+    .card-amount {
+        font-size: 1.1rem;
+    }
+
+    .card--balance .card-amount {
+        font-size: 1.2rem;
+    }
+
+    .form-section,
+    .list-section {
+        padding: 16px;
+    }
+}
